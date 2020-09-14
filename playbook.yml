@@ -6,8 +6,8 @@
 
   vars:
     ansible_winrm_scheme: http
-    saves_dir: "C:\\SpaceEngineersSaves"
     server_dir: "C:\\SpaceEngineersServer"
+    saves_dir: "C:\\SpaceEngineersData"
 
   tasks:
     - name: "install space engineers deps"
@@ -20,7 +20,7 @@
         - vcredist2017
 
     - name: "check for steamcmd"
-      win_stat: 
+      win_stat:
         path: "C:\\steamcmd.zip"
       register: steamcmd
 
@@ -33,8 +33,8 @@
     - name: "unpack steamcmd"
       win_unzip:
         src: "C:\\steamcmd.zip"
-        dest: "C:\\"
-        creates: "C:\\steamcmd"
+        dest: "C:\\steamcmd"
+        creates: "C:\\steamcmd\\steamcmd.exe"
 
     - name: "install space engineers"
       win_command: >
@@ -43,16 +43,26 @@
         +force_install_dir {{ server_dir }}
         +app_update 298740 validate
         +quit
+      register: se_install
+      failed_when: se_install.rc != 7
       args:
         chdir: "C:\\steamcmd"
         creates: "{{ server_dir }}"
-      notify: "start space engineers"
 
+    - name: "check for running space engineers server"
+      win_service:
+        name: "SpaceEngineersDedicated"
+      register: se_service
 
-  handlers:
+    - debug:
+        var: se_service
+
     - name: "start space engineers"
       win_command: >
-        SpaceEngineersDedicated.exe
+        {{ server_dir}}\DedicatedServer64\SpaceEngineersDedicated.exe
         -console
         -port 27016
         -path {{ saves_dir }}
+      args:
+        chdir: "{{ server_dir }}"
+      # when: "se_service.state != 'running'"
