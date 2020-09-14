@@ -5,7 +5,7 @@
 A vagrant/virtualbox VM to run space engineers.
 Will only work on unix systems.
 
-Run `vagrant up` to download, setup and run.
+Put your starting save in the `saves` direcetory, then run `vagrant up` to download, setup and run the server.
 
 ## Requirements
 
