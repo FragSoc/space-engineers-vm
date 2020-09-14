@@ -1,0 +1,58 @@
+# :vi set ft=yaml.ansible:
+---
+
+- hosts: all
+  gather_facts: no
+
+  vars:
+    ansible_winrm_scheme: http
+    saves_dir: "C:\\SpaceEngineersSaves"
+    server_dir: "C:\\SpaceEngineersServer"
+
+  tasks:
+    - name: "install space engineers deps"
+      win_chocolatey:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - dotnet4.6.1
+        - vcredist2013
+        - vcredist2017
+
+    - name: "check for steamcmd"
+      win_stat: 
+        path: "C:\\steamcmd.zip"
+      register: steamcmd
+
+    - name: "download steamcmd"
+      win_get_url:
+        url: "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip"
+        dest: "C:\\steamcmd.zip"
+      when: not steamcmd.stat.exists
+
+    - name: "unpack steamcmd"
+      win_unzip:
+        src: "C:\\steamcmd.zip"
+        dest: "C:\\"
+        creates: "C:\\steamcmd"
+
+    - name: "install space engineers"
+      win_command: >
+        steamcmd.exe
+        +login anonymous
+        +force_install_dir {{ server_dir }}
+        +app_update 298740 validate
+        +quit
+      args:
+        chdir: "C:\\steamcmd"
+        creates: "{{ server_dir }}"
+      notify: "start space engineers"
+
+
+  handlers:
+    - name: "start space engineers"
+      win_command: >
+        SpaceEngineersDedicated.exe
+        -console
+        -port 27016
+        -path {{ saves_dir }}
