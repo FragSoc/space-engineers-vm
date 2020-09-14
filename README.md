@@ -1,4 +1,6 @@
-# Space Engineers Dedicated Server Virtual Machine
+![](https://www.spaceengineersgame.com/uploads/2/1/9/6/21961362/2183352_orig.jpg)
+
+# Space Engineers Ded. Server VM
 
 A vagrant/virtualbox VM to run space engineers.
 Will only work on unix systems.
