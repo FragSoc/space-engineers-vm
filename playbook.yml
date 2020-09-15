@@ -49,14 +49,6 @@
         chdir: "C:\\steamcmd"
         creates: "{{ server_dir }}"
 
-    - name: "check for running space engineers server"
-      win_service:
-        name: "SpaceEngineersDedicated"
-      register: se_service
-
-    - debug:
-        var: se_service
-
     - name: "start space engineers"
       win_command: >
         {{ server_dir}}\DedicatedServer64\SpaceEngineersDedicated.exe
@@ -65,4 +57,4 @@
         -path {{ saves_dir }}
       args:
         chdir: "{{ server_dir }}"
-      # when: "se_service.state != 'running'"
+      changed_when: false

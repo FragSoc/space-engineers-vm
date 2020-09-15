@@ -16,5 +16,5 @@ Put your starting save in the `saves` direcetory, then run `vagrant up` to downl
 ## Resources
 
 - Opens port 27016 for the server
-- Reserves 2GB of RAM
+- Reserves 8GB of RAM
 - Binds the saves directory to the `saves` folder in this repo
